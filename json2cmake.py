@@ -113,7 +113,7 @@ class CompilationDatabase(object):
             output.write(')\n\n')
 
 
-if __name__ == '__main__':
+def main():
     database = CompilationDatabase()
 
     with open('compile_commands.json') as input:
@@ -121,3 +121,7 @@ if __name__ == '__main__':
 
     with open('CMakeLists.txt', mode='w') as output:
         database.write(output)
+
+
+if __name__ == '__main__':
+    main()
