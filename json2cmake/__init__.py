@@ -19,7 +19,8 @@ def freeze(obj):
 
 
 def parsecommand(command, directory=os.curdir):
-    command = shlex.split(command)
+    if (isinstance(command, basestring)):
+        command = shlex.split(command)
     words = iter(command)
     next(words)  # remove the initial 'cc' / 'c++'
 
@@ -67,8 +68,14 @@ class CompilationDatabase(object):
     def read(self, input):
         database = json.load(input)
         for entry in database:
-            command = freeze(
-                parsecommand(entry['command'], directory=entry['directory']))
+            if 'command' in entry.keys():
+                command = freeze(
+                    parsecommand(
+                        entry['command'], directory=entry['directory']))
+            if 'arguments' in entry.keys():
+                command = freeze(
+                    parsecommand(
+                        entry['arguments'], directory=entry['directory']))
             self.targets.setdefault(command, set()).add(entry['file'])
 
     def write(self, output, directory=None):
