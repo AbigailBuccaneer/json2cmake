@@ -35,6 +35,9 @@ def parsecommand(command, directory=os.curdir):
         elif word.startswith('-I'):
             include = word[2:]
             include = os.path.abspath(os.path.relpath(include, directory))
+            if not os.path.exists(include):
+                include = os.path.abspath(
+                    os.path.join(os.getcwd(), os.path.basename(include)))
             includes.append(include)
         elif word == '-isystem':
             include = next(words)
@@ -69,7 +72,9 @@ class CompilationDatabase(object):
         for entry in database:
             command = freeze(
                 parsecommand(entry['command'], directory=entry['directory']))
-            self.targets.setdefault(command, set()).add(entry['file'])
+            file = os.path.relpath(
+                os.path.join(entry['directory'], entry['file']), os.getcwd())
+            self.targets.setdefault(command, set()).add(file)
 
     def write(self, output, directory=None):
         output.write('cmake_minimum_required(VERSION 2.8.8)\n')
