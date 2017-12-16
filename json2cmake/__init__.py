@@ -18,7 +18,7 @@ def freeze(obj):
     return obj
 
 
-def parsecommand(command, directory=os.curdir):
+def parsecommand(command, resolvepath):
     if (isinstance(command, basestring)):
         command = shlex.split(command)
     words = iter(command)
@@ -35,11 +35,10 @@ def parsecommand(command, directory=os.curdir):
             continue
         elif word.startswith('-I'):
             include = word[2:]
-            include = os.path.abspath(os.path.relpath(include, directory))
-            includes.append(include)
+            includes.append(resolvepath(include))
         elif word == '-isystem':
             include = next(words)
-            include = os.path.abspath(os.path.relpath(include, directory))
+            include = resolvepath(include)
             if include not in includes:
                 includes.append(include)
             system_includes.add(include)
@@ -68,15 +67,24 @@ class CompilationDatabase(object):
     def read(self, input):
         database = json.load(input)
         for entry in database:
+            directory = entry['directory']
+
+            def resolve(path):
+                if not os.path.isabs(path):
+                    path = os.path.join(directory, path)
+                return os.path.normcase(os.path.normpath(path))
+
             if 'command' in entry.keys():
                 command = freeze(
                     parsecommand(
-                        entry['command'], directory=entry['directory']))
+                        entry['command'], resolve))
             if 'arguments' in entry.keys():
                 command = freeze(
                     parsecommand(
-                        entry['arguments'], directory=entry['directory']))
-            self.targets.setdefault(command, set()).add(entry['file'])
+                        entry['arguments'], resolve))
+
+            file = resolve(entry['file'])
+            self.targets.setdefault(command, set()).add(file)
 
     def write(self, output, directory=None):
         output.write('cmake_minimum_required(VERSION 2.8.8)\n')
