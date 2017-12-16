@@ -1,5 +1,7 @@
 # json2cmake
 
+[![Build Status](https://travis-ci.org/AbigailBuccaneer/json2cmake.svg?branch=master)](https://travis-ci.org/AbigailBuccaneer/json2cmake)
+
 `json2cmake` converts [JSON compilation database][] files into [CMake][] files.
 The resulting `CMakeLists.txt` file can then be used to recompile the same object files with less overhead via [Ninja][], used as an IDE project file for [CLion][], or for integration into a larger CMake project.
 
