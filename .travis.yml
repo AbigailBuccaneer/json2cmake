@@ -1,5 +1,9 @@
 language: python
 python:
   - "2.7"
-install: pip install .
-script: true # TODO write and run some tests
+install:
+  - pip install pipenv pew
+  - pipenv install --dev --ignore-pipfile
+script:
+  - pipenv run flake8
+  # TODO write some tests and run them here
