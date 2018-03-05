@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-
+import argparse
 import json
 import os.path
 import shlex
+import sys
 import uuid
 
 try:
@@ -134,13 +135,29 @@ class CompilationDatabase(object):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="""
+        Convert a compile_commands.json file to a CMakeLists.txt file.
+    """)
+
+    infile = 'compile_commands.json' if os.isatty(sys.stdin.fileno()) else '-'
+    parser.add_argument(
+        'infile', nargs='?', type=argparse.FileType('r'), default=infile,
+        help="""
+path of the compilation database (default: compile_commands.json or stdin)
+        """
+    )
+    outfile = 'CMakeLists.txt' if os.isatty(sys.stdout.fileno()) else '-'
+    parser.add_argument(
+        'outfile', nargs='?', type=argparse.FileType('w'), default=outfile,
+        help="""
+path of the CMake file (default: CMakeLists.txt or stdout)
+        """
+    )
+    args = parser.parse_args()
+
     database = CompilationDatabase()
-
-    with open('compile_commands.json') as input:
-        database.read(input)
-
-    with open('CMakeLists.txt', mode='w') as output:
-        database.write(output)
+    database.read(args.infile)
+    database.write(args.outfile)
 
 
 if __name__ == '__main__':
