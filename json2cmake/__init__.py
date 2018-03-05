@@ -32,7 +32,7 @@ def parsecommand(command, resolvepath):
     next(words)  # remove the initial 'cc' / 'c++'
 
     options = []
-    defines = {}
+    defines = []
     includes = []
     system_includes = set()
 
@@ -50,10 +50,7 @@ def parsecommand(command, resolvepath):
                 includes.append(include)
             system_includes.add(include)
         elif word.startswith('-D'):
-            key, _, value = word[2:].partition('=')
-            if value == '':
-                value = True
-            defines[key] = value
+            defines.append(word[2:])
         elif word == '-c':
             continue
         elif word.startswith('-'):
@@ -112,11 +109,8 @@ class CompilationDatabase(object):
             output.write(')\n')
 
             output.write('target_compile_definitions(%s PRIVATE\n' % name)
-            for (define, value) in config['defines']:
-                str = define
-                if value is not True:
-                    str = str + '=' + value
-                output.write('    %s\n' % str)
+            for define in config['defines']:
+                output.write('    %s\n' % define)
             output.write(')\n')
 
             output.write('target_include_directories(%s PRIVATE\n' % name)
