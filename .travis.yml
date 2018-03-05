@@ -10,4 +10,6 @@ install:
   - pipenv install --dev --ignore-pipfile
 script:
   - pipenv run flake8
+  - pipenv install -e .
+  - pipenv run json2cmake --help
   # TODO write some tests and run them here
