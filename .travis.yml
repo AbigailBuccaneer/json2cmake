@@ -13,3 +13,13 @@ script:
   - pipenv install -e .
   - pipenv run json2cmake --help
   # TODO write some tests and run them here
+deploy:
+  provider: pypi
+  user: AbigailBuccaneer
+  password:
+    secure: lRjHPtaHrovkAKtMH4cW/UYAuiz9CnDJQLRZfzheuQnLKWgEW8qPQoKh+A36N6jWlMcuPxs7FyumeQDBmnI3s604Jw9D/DG1UOTCURl+VkzxnLswRaCm9yGUUbFDdN5+r5t1E4lil7dgvcKcNhUKmAWbGAi/+l++U3hqgh43PIIDF2QZbBzXJrjCis2KlYgfjR7qEb1RpoxK6V2UWGInBjs4zVhNyGzz4xuMzMhPzDSjiqI0y6WOs6R0iWehstekmtHM+cQupiMsX3c4vmnIKMFwQiUAL5P94kz0DA2w3CHfcb19C+hSF2KZnofXwjaMQlF7p03Ny1BvxH36Gq9d4wxx1yOHnh4MUUlyURHZI7zOnXALzEU2mDzhvABPw+j1R/4H32kyugrUHYtbbYqG4YvATbqsSauji8fLzdRAmSYbU7jPf/tUU5SE4No60h9t0aTvyRoKlee8nGvs8RARN71HQgIhSuxR692tLdv3YEMknStc0POQjZ5WLzJc13u5S/vKvV+bgQYmUWzjqGc1OJ9ufJmcYASBI+Mqr/9h6jpyfyDsjqTW7IkA34HWKpNbXnP8GaFwyy5hlwZykBdHt4gmjCaB4pFTwzPh1phfzA8TQw2Nq1RkrzR7TiMw6+McUrZ/Un2mPprs9GUDIknHsbMyLeC4uO8mZE0110vlNYU=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: AbigailBuccaneer/json2cmake
+    python: 2.7
