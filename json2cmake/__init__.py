@@ -35,6 +35,7 @@ def parsecommand(command, resolvepath):
     defines = []
     includes = []
     system_includes = set()
+    iquote_includes = set()
 
     for word in words:
         if word == '-o':
@@ -49,6 +50,12 @@ def parsecommand(command, resolvepath):
             if include not in includes:
                 includes.append(include)
             system_includes.add(include)
+        elif word == '-iquote':
+            include = next(words)
+            include = resolvepath(include)
+            if include not in includes:
+                includes.append(include)
+            iquote_includes.add(include)
         elif word.startswith('-D'):
             defines.append(word[2:])
         elif word == '-c':
@@ -60,7 +67,8 @@ def parsecommand(command, resolvepath):
         'options': options,
         'defines': defines,
         'includes': includes,
-        'system_includes': system_includes
+        'system_includes': system_includes,
+        'iquote_includes': iquote_includes,
     }
 
 
@@ -103,15 +111,17 @@ class CompilationDatabase(object):
                 output.write('    %s\n' % file)
             output.write(')\n')
 
-            output.write('target_compile_options(%s PRIVATE\n' % name)
-            for option in config['options']:
-                output.write('    %s\n' % option)
-            output.write(')\n')
+            if config.get('options'):
+                output.write('target_compile_options(%s PRIVATE\n' % name)
+                for option in config['options']:
+                    output.write('    %s\n' % option)
+                output.write(')\n')
 
-            output.write('target_compile_definitions(%s PRIVATE\n' % name)
-            for define in config['defines']:
-                output.write('    %s\n' % define)
-            output.write(')\n')
+            if config.get('defines'):
+                output.write('target_compile_definitions(%s PRIVATE\n' % name)
+                for define in config['defines']:
+                    output.write('    %s\n' % define)
+                output.write(')\n')
 
             output.write('target_include_directories(%s PRIVATE\n' % name)
             for include in config['includes']:
@@ -120,13 +130,21 @@ class CompilationDatabase(object):
                 output.write('    %s\n' % include)
             output.write(')\n')
 
-            output.write(
-                'target_include_directories(%s SYSTEM PRIVATE\n' % name)
-            for include in config['system_includes']:
-                if directory is not None:
-                    include = os.path.relpath(include, directory)
-                output.write('    %s\n' % include)
-            output.write(')\n\n')
+            if config.get('system_includes'):
+                output.write(
+                    'target_include_directories(%s SYSTEM PRIVATE\n' % name)
+                for include in config['system_includes']:
+                    if directory is not None:
+                        include = os.path.relpath(include, directory)
+                    output.write('    %s\n' % include)
+            if config.get('iquote_includes'):
+                output.write(
+                    'target_include_directories(%s BEFORE PRIVATE\n' % name)
+                for include in config['iquote_includes']:
+                    if directory is not None:
+                        include = os.path.relpath(include, directory)
+                    output.write('    %s\n' % include)
+                output.write(')\n\n')
 
 
 def get_default_name(compilation_database):
