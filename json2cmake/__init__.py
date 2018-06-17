@@ -72,6 +72,15 @@ def parsecommand(command, resolvepath):
     }
 
 
+def get_include_path(include_path, source_dir):
+    result = os.path.relpath(include_path, source_dir)
+    # For paths that are not below the source root write the absolute path
+    # to the CMakeLists instead of ../../../usr/local/include
+    if os.path.isabs(include_path) and result.startswith(os.path.pardir):
+        return include_path
+    return result
+
+
 class CompilationDatabase(object):
     def __init__(self):
         self.targets = {}
@@ -126,7 +135,7 @@ class CompilationDatabase(object):
             output.write('target_include_directories(%s PRIVATE\n' % name)
             for include in config['includes']:
                 if directory is not None:
-                    include = os.path.relpath(include, directory)
+                    include = get_include_path(include, directory)
                 output.write('    %s\n' % include)
             output.write(')\n')
 
@@ -135,14 +144,14 @@ class CompilationDatabase(object):
                     'target_include_directories(%s SYSTEM PRIVATE\n' % name)
                 for include in config['system_includes']:
                     if directory is not None:
-                        include = os.path.relpath(include, directory)
+                        include = get_include_path(include, directory)
                     output.write('    %s\n' % include)
             if config.get('iquote_includes'):
                 output.write(
                     'target_include_directories(%s BEFORE PRIVATE\n' % name)
                 for include in config['iquote_includes']:
                     if directory is not None:
-                        include = os.path.relpath(include, directory)
+                        include = get_include_path(include, directory)
                     output.write('    %s\n' % include)
                 output.write(')\n\n')
 
