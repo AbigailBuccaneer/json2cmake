@@ -10,7 +10,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='json2cmake',
-    version='0.6.2',
+    version='0.6.3',
     description='Generate CMakeLists.txt from a compile_commands.json',
     long_description=long_description,
     url='https://github.com/AbigailBuccaneer/json2cmake',

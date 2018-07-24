@@ -2,10 +2,10 @@
 import argparse
 import json
 import os.path
+import re
 import shlex
 import subprocess
 import sys
-import uuid
 
 try:
     basestring
@@ -114,9 +114,22 @@ class CompilationDatabase(object):
         output.write('cmake_minimum_required(VERSION 2.8.8)\n')
         output.write('project({})\n\n'.format(name))
 
+        used_names = {""}
+        disallowed_characters = re.compile("[^A-Za-z0-9_.+\-]")
+
         for (config, files) in self.targets.items():
             config = {k: v for (k, v) in config}
-            name = uuid.uuid4()
+            name = os.path.basename(os.path.commonprefix(files).rstrip("/_"))
+            name = re.sub(disallowed_characters, "", name)
+            if name in used_names:
+                index = 2
+                while True:
+                    candidate = '{}_{}'.format(name, index)
+                    if candidate not in used_names:
+                        name = candidate
+                        break
+                    index = index + 1
+            used_names.add(name)
 
             output.write('add_library(%s OBJECT\n' % name)
             for file in files:
