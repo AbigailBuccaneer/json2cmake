@@ -146,6 +146,7 @@ class CompilationDatabase(object):
                     if directory is not None:
                         include = get_include_path(include, directory)
                     output.write('    %s\n' % include)
+                output.write(')\n\n')
             if config.get('iquote_includes'):
                 output.write(
                     'target_include_directories(%s BEFORE PRIVATE\n' % name)
