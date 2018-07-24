@@ -60,7 +60,7 @@ def parsecommand(command, resolvepath):
             defines.append(word[2:])
         elif word == '-c':
             continue
-        elif word in ['-arch', '-include']:
+        elif word in ['-arch', '-include', '-x']:
             options.append(word)
             options.append(next(words))
         elif word.startswith('-'):
