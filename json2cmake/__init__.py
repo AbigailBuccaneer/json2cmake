@@ -118,6 +118,7 @@ class CompilationDatabase(object):
         disallowed_characters = re.compile("[^A-Za-z0-9_.+\-]")
 
         for (config, files) in self.targets.items():
+            files = list(files)
             config = {k: v for (k, v) in config}
             name = os.path.basename(os.path.commonprefix(files).rstrip("/_"))
             name = re.sub(disallowed_characters, "", name)
