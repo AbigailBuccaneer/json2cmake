@@ -26,6 +26,9 @@ def freeze(obj):
 
 
 def parsecommand(command, resolvepath):
+    ISYSTEM = '-isystem'
+    IQUOTE = '-iquote'
+
     if (isinstance(command, basestring)):
         command = shlex.split(command)
     words = iter(command)
@@ -44,14 +47,20 @@ def parsecommand(command, resolvepath):
         elif word.startswith('-I'):
             include = word[2:]
             includes.append(resolvepath(include))
-        elif word == '-isystem':
-            include = next(words)
+        elif word.startswith(ISYSTEM):
+            if word == ISYSTEM:
+                include = next(words)
+            else:
+                include = word[len(ISYSTEM):]
             include = resolvepath(include)
             if include not in includes:
                 includes.append(include)
             system_includes.add(include)
-        elif word == '-iquote':
-            include = next(words)
+        elif word.startswith(IQUOTE):
+            if word == IQUOTE:
+                include = next(words)
+            else:
+                include = word[len(IQUOTE):]
             include = resolvepath(include)
             if include not in includes:
                 includes.append(include)
