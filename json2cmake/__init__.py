@@ -96,7 +96,10 @@ class CompilationDatabase(object):
             def resolve(path):
                 if not os.path.isabs(path):
                     path = os.path.join(directory, path)
-                return os.path.normcase(os.path.normpath(path))
+                if sys.platform.startswith('win32'):
+                    return os.path.normcase(os.path.normpath(path)).replace("\\", "/") # Windows fix so that paths have correct slashes
+                else:
+                    return os.path.normcase(os.path.normpath(path))
 
             if 'command' in entry.keys():
                 command = freeze(
