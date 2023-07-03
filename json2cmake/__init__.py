@@ -120,7 +120,7 @@ class CompilationDatabase(object):
         for (config, files) in self.targets.items():
             files = list(files)
             config = {k: v for (k, v) in config}
-            name = os.path.basename(os.path.commonprefix(files).rstrip("/_"))
+            name = os.path.basename(os.path.commonprefix(list(files)).rstrip("/_"))
             name = re.sub(disallowed_characters, "", name)
             if name in used_names:
                 index = 2
